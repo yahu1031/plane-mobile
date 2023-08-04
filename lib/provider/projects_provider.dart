@@ -14,8 +14,8 @@ import 'package:plane_startup/utils/enums.dart';
 import '../models/issues.dart';
 
 class ProjectsProvider extends ChangeNotifier {
-  ProjectsProvider(ChangeNotifierProviderRef<ProjectsProvider> this.ref);
-  final Ref ref;
+  ProjectsProvider(ChangeNotifierProviderRef<ProjectsProvider>? this.ref);
+  final Ref? ref;
   var projects = [];
   var starredProjects = [];
   var projectState = StateEnum.empty;
@@ -73,15 +73,15 @@ class ProjectsProvider extends ChangeNotifier {
   }
 
   Future initializeProject({Filters? filters}) async {
-    var prov = ref.read(ProviderList.issuesProvider);
-    var moduleProv = ref.read(ProviderList.modulesProvider);
-    var viewsProvider = ref.read(ProviderList.viewsProvider.notifier);
-    var pageProv = ref.read(ProviderList.pageProvider);
+    var prov = ref!.read(ProviderList.issuesProvider);
+    var moduleProv = ref!.read(ProviderList.modulesProvider);
+    var viewsProvider = ref!.read(ProviderList.viewsProvider.notifier);
+    var pageProv = ref!.read(ProviderList.pageProvider);
     if (currentProject['estimate'] != null &&
         currentProject['estimate'] != '') {
       // prov.issues.displayProperties.estimate = true;
     }
-    String workspaceSlug = ref
+    String workspaceSlug = ref!
         .read(ProviderList.workspaceProvider)
         .selectedWorkspace!
         .workspaceSlug;
@@ -89,7 +89,7 @@ class ProjectsProvider extends ChangeNotifier {
       slug: workspaceSlug,
       projID: currentProject['id'],
     );
-    ref.read(ProviderList.estimatesProvider).getEstimates(
+    ref!.read(ProviderList.estimatesProvider).getEstimates(
           slug: workspaceSlug,
           projID: currentProject['id'],
         );
@@ -115,7 +115,7 @@ class ProjectsProvider extends ChangeNotifier {
 
     getProjectDetails(slug: workspaceSlug, projId: currentProject['id']);
 
-    var cyclesProv = ref.read(ProviderList.cyclesProvider);
+    var cyclesProv = ref!.read(ProviderList.cyclesProvider);
     var projectID = currentProject['id'];
     cyclesProv.cyclesState = StateEnum.loading;
 

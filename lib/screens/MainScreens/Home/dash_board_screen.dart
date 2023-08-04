@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,8 @@ import 'package:plane_startup/bottom_sheets/select_workspace.dart';
 import 'package:plane_startup/utils/enums.dart';
 import 'package:plane_startup/widgets/custom_text.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../config/const.dart';
 
 class DashBoardScreen extends ConsumerStatefulWidget {
   final bool fromSignUp;
@@ -76,277 +80,276 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen> {
       //backgroundColor: themeProvider.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-        child: Column(
-          children: [
-            Container(
-                width: MediaQuery.of(context).size.width,
-                child: headerWidget()),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width *
-                      0.65, //ToDo : make it better
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        '${greetAtTime(DateTime.now().hour)}, ${profileProvider.userProfile.firstName ?? 'User name'}',
-                        type: FontStyle.mainHeading,
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          greetingImageAtTime(DateTime.now().hour),
-                          const SizedBox(width: 5),
-                          CustomText(
-                            //DateFormat('EEEE, MMM dd  hh:mm ').format(DateTime.now()),
-                            DateFormat('EEEE, MMM dd')
-                                .add_jm()
-                                .format(DateTime.now()),
-                            type: FontStyle.description,
-                            color: greyColor,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            dashboardProvider.hideGithubBlock == false
-                ? Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: themeProvider.isDarkThemeEnabled
-                                    ? darkThemeBorder
-                                    : Colors.transparent),
-                            borderRadius: BorderRadius.circular(10),
-                            color: themeProvider.isDarkThemeEnabled
-                                ? Colors.black
-                                : lightGreyBoxColor),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25, vertical: 25),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                  child: CustomText(
-                                    'Plane is open source, support us by staring us on GitHub.',
-                                    type: FontStyle.text,
-                                    textAlign: TextAlign.start,
-                                    color: themeProvider.isDarkThemeEnabled
-                                        ? Colors.white
-                                        : Colors.black,
-                                    overflow: TextOverflow.visible,
-                                    maxLines: 5,
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      dashboardProvider.hideGithubBlock = true;
-                                    });
-                                  },
-                                  child: Icon(
-                                    Icons.close,
-                                    color: themeProvider.isDarkThemeEnabled
-                                        ? Colors.white
-                                        : greyColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          themeProvider.isDarkThemeEnabled
-                                              ? Colors.white
-                                              : Colors.black,
-                                      elevation: 0),
-                                  onPressed: () async {
-                                    //redirect to github using url launcher.
-                                    try {
-                                      var url = Uri.parse(
-                                          'https://github.com/makeplane/plane-mobile');
-
-                                      await launchUrl(url);
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.redAccent,
-                                          content: Text(
-                                              'Something went wrong !',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: CustomText(
-                                    'Star us on GitHub',
-                                    type: FontStyle.buttonText,
-                                    color: themeProvider.isDarkThemeEnabled
-                                        ? Colors.black
-                                        : Colors.white,
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 20,
-                        right: 35,
-                        child: Image.asset(
-                          themeProvider.isDarkThemeEnabled
-                              ? 'assets/images/github.png'
-                              : 'assets/images/github_black.png',
-                          width: 70,
-                          height: 70,
-                        ),
-                      ),
-                    ],
-                  )
-                : Container(),
-            const SizedBox(
-              height: 20,
-            ),
-            projectProvider.projects.isEmpty &&
-                    projectProvider.projectState != StateEnum.loading
-                ? Container(
-                    decoration: BoxDecoration(
-                        color: const Color.fromRGBO(63, 118, 255, 0.05),
-                        borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.all(15),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: headerWidget()),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width *
+                        0.65, //ToDo : make it better
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const CustomText(
-                          'Create a project',
-                          type: FontStyle.heading,
+                        CustomText(
+                          '${greetAtTime(DateTime.now().hour)}, ${profileProvider.userProfile.firstName ?? ''}',
+                          type: FontStyle.mainHeading,
+                          maxLines: 2,
                         ),
-                        const SizedBox(height: 15),
-                        const CustomText(
-                            'Manage your projects by creating issues, cycles, modules, views and pages.'),
-                        const SizedBox(height: 15),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CreateProject()));
-                          },
-                          child: Container(
-                            height: 40,
-                            width: 150,
-                            //margin: const EdgeInsets.only(top: 30),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              color: const Color.fromRGBO(63, 118, 255, 1),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            greetingImageAtTime(DateTime.now().hour),
+                            const SizedBox(width: 5),
+                            CustomText(
+                              //DateFormat('EEEE, MMM dd  hh:mm ').format(DateTime.now()),
+                              DateFormat('EEEE, MMM dd')
+                                  .add_jm()
+                                  .format(DateTime.now()),
+                              type: FontStyle.description,
+                              color: greyColor,
                             ),
-                            child: const CustomText(
-                              'Create Project',
-                              type: FontStyle.buttonText,
-                            ),
-                          ),
-                        )
+                          ],
+                        ),
                       ],
                     ),
-                  )
-                : Container(),
-            projectProvider.projects.isNotEmpty
-                ? GridView.builder(
-                    itemCount: 4,
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        childAspectRatio: MediaQuery.of(context).size.width /
-                            (MediaQuery.of(context).size.height * 0.25)),
-                    itemBuilder: (context, index) {
-                      return Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              dashboardProvider.hideGithubBlock == false
+                  ? Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: themeProvider.isDarkThemeEnabled
+                                      ? darkThemeBorder
+                                      : Colors.transparent),
+                              borderRadius: BorderRadius.circular(10),
                               color: themeProvider.isDarkThemeEnabled
-                                  ? darkThemeBorder
-                                  : strokeColor),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
+                                  ? Colors.black
+                                  : lightGreyBoxColor),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 25, vertical: 25),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Text(
-                              //   'Issues assigned by you',
-                              //   style: TextStylingWidget.smallText.copyWith(
-                              //     color: themeProvider.primaryTextColor,
-                              //   ),
-                              // ),
-                              CustomText(
-                                gridCards[index],
-                                type: FontStyle.smallText,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    child: CustomText(
+                                      'Plane is open source, support us by staring us on GitHub.',
+                                      type: FontStyle.text,
+                                      textAlign: TextAlign.start,
+                                      color: themeProvider.isDarkThemeEnabled
+                                          ? Colors.white
+                                          : Colors.black,
+                                      overflow: TextOverflow.visible,
+                                      maxLines: 5,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        dashboardProvider.hideGithubBlock =
+                                            true;
+                                      });
+                                    },
+                                    child: Icon(
+                                      Icons.close,
+                                      color: themeProvider.isDarkThemeEnabled
+                                          ? Colors.white
+                                          : greyColor,
+                                      key: const Key('hide-github-block'),
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(
-                                height: 5,
+                                height: 20,
                               ),
-                              // Text(
-                              //   '0',
-                              //   style: TextStylingWidget.subHeading.copyWith(
-                              //     color: themeProvider.primaryTextColor,
-                              //   ),
-                              // )
-                              CustomText(
-                                dashboardProvider.dashboardData[
-                                            gridCardKeys[index]] !=
-                                        null
-                                    ? '${dashboardProvider.dashboardData[gridCardKeys[index]]}'
-                                    : '0',
-                                type: FontStyle.mainHeading,
-                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            themeProvider.isDarkThemeEnabled
+                                                ? Colors.white
+                                                : Colors.black,
+                                        elevation: 0),
+                                    onPressed: () async {
+                                      //redirect to github using url launcher.
+                                      try {
+                                        var url = Uri.parse(
+                                            'https://github.com/makeplane/plane-mobile');
+
+                                        await launchUrl(url);
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            backgroundColor: Colors.redAccent,
+                                            content: Text(
+                                                'Something went wrong !',
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: CustomText(
+                                      'Star us on GitHub',
+                                      type: FontStyle.buttonText,
+                                      color: themeProvider.isDarkThemeEnabled
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
-                      );
-                    },
-                  )
-                : Container()
-          ],
+                        Positioned(
+                          bottom: 20,
+                          right: 35,
+                          child: Image.asset(
+                            themeProvider.isDarkThemeEnabled
+                                ? 'assets/images/github.png'
+                                : 'assets/images/github_black.png',
+                            width: 70,
+                            height: 70,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Container(),
+              const SizedBox(
+                height: 20,
+              ),
+              projectProvider.projects.isEmpty &&
+                      projectProvider.projectState != StateEnum.loading
+                  ? Container(
+                      decoration: BoxDecoration(
+                          color: const Color.fromRGBO(63, 118, 255, 0.05),
+                          borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CustomText(
+                            'Create a project',
+                            type: FontStyle.heading,
+                          ),
+                          const SizedBox(height: 15),
+                          const CustomText(
+                              'Manage your projects by creating issues, cycles, modules, views and pages.'),
+                          const SizedBox(height: 15),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CreateProject()));
+                            },
+                            child: Container(
+                              height: 40,
+                              width: 150,
+                              //margin: const EdgeInsets.only(top: 30),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: const Color.fromRGBO(63, 118, 255, 1),
+                              ),
+                              child: const CustomText(
+                                'Create Project',
+                                type: FontStyle.buttonText,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  : Container(),
+              projectProvider.projects.isNotEmpty
+                  ? GridView.builder(
+                      key: const Key('dashboard-grid'),
+                      itemCount: 4,
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 20,
+                          childAspectRatio: MediaQuery.sizeOf(context).width <
+                                  MediaQuery.sizeOf(context).height
+                              ? 2.1
+                              : 4.5),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: themeProvider.isDarkThemeEnabled
+                                    ? darkThemeBorder
+                                    : strokeColor),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  gridCards[index],
+                                  type: FontStyle.smallText,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                CustomText(
+                                  dashboardProvider.dashboardData[
+                                              gridCardKeys[index]] !=
+                                          null
+                                      ? '${dashboardProvider.dashboardData[gridCardKeys[index]]}'
+                                      : '0',
+                                  type: FontStyle.mainHeading,
+                                  key: Key('grid-card-$index'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Container()
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget headerWidget() {
+    double height = MediaQuery.of(context).size.height;
+
     var workspaceProvider = ref.watch(ProviderList.workspaceProvider);
     var themeProvider = ref.watch(ProviderList.themeProvider);
     return Container(
@@ -364,6 +367,7 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
+            key: const Key('select-workspace'),
             onTap: () {
               showModalBottomSheet(
                 isScrollControlled: true,
@@ -382,69 +386,64 @@ class _DashBoardScreenState extends ConsumerState<DashBoardScreen> {
                 },
               );
             },
-            child: Row(
-              children: [
-                workspaceProvider.selectedWorkspace == null
-                    ? Container()
-                    : workspaceProvider.selectedWorkspace!.workspaceLogo != ''
-                        ? CachedNetworkImage(
-                            height: 35,
-                            width: 35,
-                            fit: BoxFit.fill,
-                            imageUrl: workspaceProvider
-                                .selectedWorkspace!.workspaceLogo,
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => Container(
-                              width: 35,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: primaryColor,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              child: Center(
-                                child: CustomText(
-                                  workspaceProvider
-                                      .selectedWorkspace!.workspaceName[0]
-                                      .toUpperCase(),
-                                  type: FontStyle.buttonText,
-                                ),
-                              ),
-                            ),
-                          )
-                        : Container(
-                            width: 35,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: primaryColor,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            child: Center(
-                              child: CustomText(
-                                workspaceProvider
-                                    .selectedWorkspace!.workspaceName[0]
-                                    .toUpperCase(),
-                                type: FontStyle.buttonText,
-                              ),
+            child: workspaceProvider.selectedWorkspace == null
+                ? Container()
+                : workspaceProvider.selectedWorkspace.workspaceLogo != ''
+                    ? CachedNetworkImage(
+                        height: 35,
+                        width: 35,
+                        fit: BoxFit.fill,
+                        imageUrl:
+                            workspaceProvider.selectedWorkspace!.workspaceLogo,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Container(
+                          width: 35,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: primaryColor,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Center(
+                            child: CustomText(
+                              workspaceProvider
+                                  .selectedWorkspace.workspaceName[0]
+                                  .toUpperCase(),
+                              type: FontStyle.buttonText,
                             ),
                           ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CustomText(
-                  workspaceProvider.selectedWorkspace!.workspaceName,
-                  type: FontStyle.subheading,
-                ),
-              ],
-            ),
+                        ),
+                      )
+                    : Container(
+                        width: 35,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: primaryColor,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        child: Center(
+                          child: CustomText(
+                            workspaceProvider.selectedWorkspace.workspaceName[0]
+                                .toUpperCase(),
+                            type: FontStyle.buttonText,
+                          ),
+                        ),
+                      ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          CustomText(
+            workspaceProvider.selectedWorkspace!.workspaceName,
+            type: FontStyle.subheading,
           ),
           const Spacer(),
           Row(

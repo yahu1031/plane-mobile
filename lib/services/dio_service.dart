@@ -86,7 +86,7 @@ class DioConfig {
     HttpMethod httpMethod = HttpMethod.get,
   }) async {
     Response response;
-    const timeoutDuration = Duration(seconds: 200);
+    const timeoutDuration = Duration(seconds: 5);
     final dio = getDio(
       data: data,
       hasAuth: hasAuth,

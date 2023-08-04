@@ -15,8 +15,12 @@ import 'package:plane_startup/provider/profile_provider.dart';
 import 'package:plane_startup/provider/projects_provider.dart';
 import 'package:plane_startup/provider/search_issue_provider.dart';
 import 'package:plane_startup/provider/workspace_provider.dart';
+import 'package:plane_startup/services/dio_service.dart';
 import 'package:plane_startup/services/shared_preference_service.dart';
 
+import '../repository/dashboard_service.dart';
+import '../repository/profile_provider_service.dart';
+import '../repository/workspace_service.dart';
 import 'estimates_provider.dart';
 import 'integration_provider.dart';
 import 'issues_provider.dart';
@@ -27,10 +31,11 @@ import 'views_provider.dart';
 class ProviderList {
   static final authProvider =
       ChangeNotifierProvider<AuthProvider>((ref) => AuthProvider(ref));
-  static final profileProvider =
-      ChangeNotifierProvider<ProfileProvider>((_) => ProfileProvider());
-  static final workspaceProvider = ChangeNotifierProvider<WorkspaceProvider>(
-      (ref) => WorkspaceProvider(ref));
+  static var  profileProvider = ChangeNotifierProvider<ProfileProvider>(
+      (_) => ProfileProvider(profileService: ProfileService(DioConfig())));
+  static var workspaceProvider = ChangeNotifierProvider<WorkspaceProvider>(
+      (ref) => WorkspaceProvider(
+          ref: ref, workspaceService: WorkspaceService(DioConfig())));
   static var themeProvider =
       ChangeNotifierProvider<ThemeProvider>((_) => ThemeProvider());
   static var projectProvider =
@@ -55,7 +60,8 @@ class ProviderList {
   static var activityProvider =
       ChangeNotifierProvider<ActivityProvider>((_) => ActivityProvider());
   static var dashboardProvider = ChangeNotifierProvider<DashBoardProvider>(
-      (ref) => DashBoardProvider(ref));
+      (ref) => DashBoardProvider(
+          ref: ref, dashboardService: DashboardService(DioConfig())));
   static var integrationProvider = ChangeNotifierProvider<IntegrationProvider>(
       (ref) => IntegrationProvider(ref));
   static var viewsProvider = StateNotifierProvider<ViewsNotifier, ViewsModel>(

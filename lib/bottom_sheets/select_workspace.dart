@@ -90,51 +90,15 @@ class _SelectWorkspaceState extends ConsumerState<SelectWorkspace> {
                                             .userProfile.lastWorkspaceId)
                                     .first['slug']);
                             ref
-                                .read(ProviderList.projectProvider)
-                                .favouriteProjects(
-                                  index: 0,
-                                  slug: ref
-                                      .read(ProviderList.workspaceProvider)
-                                      .workspaces
-                                      .where((element) =>
-                                          element['id'] ==
-                                          profileProvider
-                                              .userProfile.lastWorkspaceId)
-                                      .first['slug'],
-                                  method: HttpMethod.get,
-                                  projectID: "",
-                                );
-                            ref
                                 .read(ProviderList.notificationProvider)
-                                .getUnreadCount();
+                                .getAllNotifications();
 
-                            ref
-                                .read(ProviderList.notificationProvider)
-                                .getNotifications(type: 'assigned');
-                            ref
-                                .read(ProviderList.notificationProvider)
-                                .getNotifications(type: 'created');
-                            ref
-                                .read(ProviderList.notificationProvider)
-                                .getNotifications(type: 'watching');
-                            ref
-                                .read(ProviderList.notificationProvider)
-                                .getNotifications(
-                                    type: 'unread', getUnread: true);
-                            ref
-                                .read(ProviderList.notificationProvider)
-                                .getNotifications(
-                                    type: 'archived', getArchived: true);
-                            ref
-                                .read(ProviderList.notificationProvider)
-                                .getNotifications(
-                                    type: 'snoozed', getSnoozed: true);
                             ref
                                 .watch(ProviderList.myIssuesProvider)
                                 .getMyIssues(
                                   slug: ref
                                       .read(ProviderList.workspaceProvider)
-                                      .selectedWorkspace!
+                                      .selectedWorkspace
                                       .workspaceSlug,
                                 );
                           },
